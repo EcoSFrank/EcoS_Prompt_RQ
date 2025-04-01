@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoS Prompt-Generator: Relevance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900 font-sans">
+    <div class="max-w-3xl mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-4">EcoS Prompt-Generator: Relevance</h1>
+      <p class="mb-6 text-sm text-gray-700">
+        <strong>Instructions:</strong> Enter the information on your project in the three windows below. After clicking
+        "submit", a prompt will be generated. You can copy and paste this text into any AI you would like to use,
+        such as ChatGPT, Claude, Gemini, Perplexity, etc.
+      </p>
+
+      <div class="space-y-4">
+        <div>
+          <label for="title" class="block font-medium">1. Enter the title of your paper or thesis here</label>
+          <input type="text" id="title" maxlength="300" required class="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="text-right text-xs text-gray-500" id="count1">0 / 300</div>
+        </div>
+
+        <div>
+          <label for="rq" class="block font-medium">2. Enter the research question here</label>
+          <input type="text" id="rq" maxlength="300" required class="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="text-right text-xs text-gray-500" id="count2">0 / 300</div>
+        </div>
+
+        <div>
+          <label for="relevance" class="block font-medium">3. Paste the text of your relevance section here</label>
+          <textarea id="relevance" rows="10" maxlength="5000" required class="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <div class="text-right text-xs text-gray-500" id="count3">0 / 5000</div>
+        </div>
+
+        <button onclick="generatePrompt()" class="bg-blue-600 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-700 transition">Submit</button>
+      </div>
+
+      <div id="output" class="mt-8 whitespace-pre-wrap bg-white border border-gray-300 rounded-xl p-4 text-sm"></div>
+      <button onclick="downloadText()" style="display:none;" id="downloadBtn" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">Download as .txt</button>
+    </div>
+
+    <script>
+      const titleInput = document.getElementById("title");
+      const rqInput = document.getElementById("rq");
+      const relInput = document.getElementById("relevance");
+
+      titleInput.addEventListener("input", () => {
+        document.getElementById("count1").textContent = titleInput.value.length + " / 300";
+      });
+      rqInput.addEventListener("input", () => {
+        document.getElementById("count2").textContent = rqInput.value.length + " / 300";
+      });
+      relInput.addEventListener("input", () => {
+        document.getElementById("count3").textContent = relInput.value.length + " / 5000";
+      });
+
+      function generatePrompt() {
+        const title = titleInput.value.trim();
+        const rq = rqInput.value.trim();
+        const relevance = relInput.value.trim();
+
+        if (!title || !rq || !relevance) {
+          alert("Please fill in all three fields.");
+          return;
+        }
+
+        const prompt = `Please provide feedback on the relevance of the research question according to the standards at EcoS. The title of my project is „${title}“. The Research Question is „${rq}“. The standards to consider include:
+Do I answer the question „who can benefit why and how from knowing the answer to my RQ“?
+Do I discuss the relevance of my RQ, and not of my topic?
+Do I discuss the relevance of my RQ, and not of some related issue?
+Do I include a list of stakeholders („who“) regarding the relevance of my RQ?
+Have I, for each stakeholder, provided arguments and reasons (“why and how”) explaining the relevance of my RQ for them?
+Do I provide evidence (data, citations) for the alleged interests of each stakeholder?
+Do I provide a reasonable number of potential stakeholders?
+Do I not just claim some interest (e.g. “academics will be interested…”)? 
+Do I provide evidence of such an interest instead, for example through citations, data, etc.? 
+
+My relevance section:
+${relevance}`;
+
+        document.getElementById("output").textContent = prompt;
+        document.getElementById("downloadBtn").style.display = "inline-block";
+      }
+
+      function downloadText() {
+        const text = document.getElementById("output").textContent;
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "ecos_prompt.txt";
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
